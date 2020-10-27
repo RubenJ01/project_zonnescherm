@@ -29,7 +29,7 @@ class GUI:
         self.__frameBottom = Frame(self.__root)
         self.__frameBottom.pack(side=BOTTOM, expand=YES, fill=X)
         # Drop down voor selecteren zonnescherm
-        self.__devices = ["Geen zonnescherm", "zonnescherm1"]
+        self.__devices = ["Geen zonnescherm", "zonnescherm1", "zonnescherm2", "zonnescherm3", "zonnescherm4", "zonnescherm5" ]
         self.__selected_device = StringVar()
         self.__selected_device.set(self.__devices[0])
         OptionMenu(self.__frameTop, self.__selected_device, *self.__devices, command=self.__select_zonnescherm).pack(side=LEFT)
@@ -56,6 +56,8 @@ class GUI:
         self.__entryMaxTemperatuur.pack(side=LEFT)
         Button(self.__frameBottom, text='Zet maximum temperatuur', command=self.__set_max_temperatuur).pack(side=LEFT)
         # Lichtopties
+        self.__lichtopties_label = Label(self.__frameBottom, text="Zet lichtintensiteit:")
+        self.__lichtopties_label.pack(side=LEFT)
         self.__lichtopties = ["Donker", "Schemerig", "Neutraal", "Licht", "Veel licht"]
         self.__selected_licht = StringVar()
         self.__selected_licht.set(self.__lichtopties[0])
