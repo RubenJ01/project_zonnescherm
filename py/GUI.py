@@ -3,6 +3,9 @@ from tkinter import *
 class GUI:
 
     def __init__(self):
+        self.__zonneschermen = []
+        self.__selected_zonnescherm = None
+
         # Callbacks
         self.__zonneschermCB = None
         self.__autoCB = None
@@ -44,10 +47,10 @@ class GUI:
         # Op en uitrol afstand
         self.__entryOprolAfstand = Entry(self.__frameBottom, bg='grey')
         self.__entryOprolAfstand.pack(side=LEFT)
-        Button(self.__frameBottom, text='Zet oprol afstand', command=self.__set_oprol_afstand).pack(side=LEFT)
+        Button(self.__frameBottom, text='Zet oprol afstand', command=self.__set_oprol).pack(side=LEFT)
         self.__entryUitrolAfstand = Entry(self.__frameBottom, bg='grey')
         self.__entryUitrolAfstand.pack(side=LEFT)
-        Button(self.__frameBottom, text='Zet uitrol afstand', command=self.__set_uitrol_afstand).pack(side=LEFT)
+        Button(self.__frameBottom, text='Zet uitrol afstand', command=self.__set_uitrol).pack(side=LEFT)
         # Minimum en maxim temperatuur
         self.__entryMinTemperatuur = Entry(self.__frameBottom, bg='grey')
         self.__entryMinTemperatuur.pack(side=LEFT)
@@ -100,10 +103,12 @@ class GUI:
         #self.__root.mainloop()
 
     def __select_zonnescherm(self, value):
+        # TODO: Verander deze functie
         if self.__zonneschermCB != None:
             self.__zonneschermCB(value)
 
     def __set_auto(self):
+        # TODO: Verander deze functie
         if self.__autoCB != None:
             self.__auto = not self.__auto
             if self.__auto == True:
@@ -112,34 +117,32 @@ class GUI:
                 self.__auto_button["text"] = "Zet automatisch aan"
             self.__autoCB(self.__auto)
 
-    def __set_open_sluit_zonnescherm(self):
-        if self.__open_sluitCB != None:
-            self.__is_open = not self.__is_open
-            if self.__is_open == True:
-                self.__open_sluit_button["text"] = "Sluit zonnescherm"
-                self.__status_zonnescherm_label["text"] = "Status: zonnescherm is open"
-            else:
-                self.__open_sluit_button["text"] = "Open zonnescherm"
-                self.__status_zonnescherm_label["text"] = "Status: zonnescherm is dicht"
-            self.__open_sluitCB(self.__is_open)
+    def __set_status(self):
+        # TODO: Verander deze functie
+        pass
 
-    def __set_oprol_afstand(self):
+    def __set_oprol(self):
+        # TODO: Verander deze functie
         if self.__oprolCB != None:
             self.__oprolCB(self.__entryOprolAfstand.get())
 
-    def __set_uitrol_afstand(self):
-        if self.__uitrolCB != None:
+    def __set_uitrol(self):
+        # TODO: Verander deze functie
+       if self.__uitrolCB != None:
             self.__uitrolCB(self.__entryUitrolAfstand.get())
 
     def __set_min_temperatuur(self):
+        # TODO: Verander deze functie
         if self.__min_temperatuurCB != None:
             self.__min_temperatuurCB(self.__entryMinTemperatuur.get())
 
     def __set_max_temperatuur(self):
+        # TODO: Verander deze functie
         if self.__max_temperatuurCB != None:
             self.__max_temperatuurCB(self.__entryMaxTemperatuur.get())
 
     def __set_licht(self, value):
+        # TODO: Verander deze functie
         if self.__lichtCB != None:
             if value == "Donker":
                 self.__lichtCB(0)
@@ -152,31 +155,39 @@ class GUI:
             elif value == "Veel licht":
                 self.__lichtCB(4)
 
+    def __receive_gem_temperatuur(temperaturen):
+        # TODO: Verander deze functie
+        pass
+
+    def __receive_gem_lichtintensiteiten(lichtintensiteiten):
+        # TODO: Verander deze functie
+        pass
+
+    def __receive_status(status):
+        # TODO: Verander deze functie
+        pass
+
+    
+    def __set_open_sluit_zonnescherm(self):
+        # TODO: Verwijder deze veroudere functie
+        if self.__open_sluitCB != None:
+            self.__is_open = not self.__is_open
+            if self.__is_open == True:
+                self.__open_sluit_button["text"] = "Sluit zonnescherm"
+                self.__status_zonnescherm_label["text"] = "Status: zonnescherm is open"
+            else:
+                self.__open_sluit_button["text"] = "Open zonnescherm"
+                self.__status_zonnescherm_label["text"] = "Status: zonnescherm is dicht"
+            self.__open_sluitCB(self.__is_open)
+
 
 
     def start(self):
         self.__root.mainloop()
 
-    def setZonneschermCB(self, callback):
-        self.__zonneschermCB = callback
+    def add_zonnescherm(self, zonnescherm):
+        self.__zonneschermen.append(zonnescherm)
 
-    def setAutoCB(self, callback):
-        self.__autoCB = callback
-
-    def setOpenSluitCB(self, callback):
-        self.__open_sluitCB = callback
-
-    def setOprolCB(self, callback):
-        self.__oprolCB = callback
-
-    def setUitrolCB(self, callback):
-        self.__uitrolCB = callback
-
-    def setMinTemperatuurCB(self, callback):
-        self.__min_temperatuurCB = callback
-
-    def setMaxTemperatuurCB(self, callback):
-        self.__max_temperatuurCB = callback
-         
-    def setLichtCB(self, callback):
-        self.__lichtCB = callback
+    def remove_zonnescherm(self, name):
+        # Verwijder zonnescherm bij name
+        pass

@@ -1,40 +1,14 @@
 from GUI import *
-
-def ontvangZonnescherm(value):
-    print(value)
-
-def ontvangAuto(value):
-    print(value)
-
-def ontvangOpenSluit(value):
-    print(value)
-
-def ontvangOprol(value):
-    print(value)
-
-def ontvangUitrol(value):
-    print(value)
-
-def ontvangMinTemperatuur(value):
-    print(value)
-
-def ontvangMaxTemperatuur(value):
-    print(value)
-
-def ontvangLicht(value):
-    print(value)
-
+from Zonnescherm_loader import *
 
 def main():
     gui = GUI()
-    gui.setZonneschermCB(ontvangZonnescherm)
-    gui.setAutoCB(ontvangAuto)
-    gui.setOpenSluitCB(ontvangOpenSluit)
-    gui.setOprolCB(ontvangOprol)
-    gui.setUitrolCB(ontvangUitrol)
-    gui.setMinTemperatuurCB(ontvangMinTemperatuur)
-    gui.setMaxTemperatuurCB(ontvangMaxTemperatuur)
-    gui.setLichtCB(ontvangLicht)
+    zonnescherm_loader = Zonnescherm_loader()
+
+    # Set de callbacks voor de zonnescherm_loader. Wanneer er een zonnescherm wordt aangesloten of verwijdert geeft de zonnescherm_loader dit door aan de gui
+    zonnescherm_loader.get_zonnescherm_CB(gui.add_zonnescherm)
+    zonnescherm_loader.remove_zonnescherm_CB(gui.remove_zonnescherm)
+
     gui.start()
 
 
