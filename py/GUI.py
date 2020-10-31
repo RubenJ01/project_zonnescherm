@@ -102,11 +102,17 @@ class GUI:
 
     def __select_zonnescherm(self, value=None):
         if value == "Geen zonnescherm":
-            self.__selected_zonnescherm = None
+            if self.__selected_zonnescherm is not None:
+                # Remove de callbacks van het zonnescherm
+                self.__selected_zonnescherm.set_gem_temperatuur_CB(None)
+                self.__selected_zonnescherm.set_gem_lichtintensiteit_CB(None)
+                self.__selected_zonnescherm.set_status_CB(None)
+                self.__selected_zonnescherm = None
             return
         for zonnescherm in self.__zonneschermen:
             if zonnescherm.get_name() == value:
                 self.__selected_zonnescherm = zonnescherm
+                # Set data van zonnescherm in GUI
                 self.__auto_button["text"] = "Zet automatisch uit" if self.__selected_zonnescherm.get_auto() else "Zet automatisch aan"
                 self.__open_sluit_button["text"] = "Sluit zonnescherm" if self.__selected_zonnescherm.get_status() else "Open zonnescherm"
                 self.__status_zonnescherm_label["text"] = "Status: zonnescherm is open" if self.__selected_zonnescherm.get_status() else "Status: zonnescherm is dicht"
@@ -115,6 +121,10 @@ class GUI:
                 self.__entry_min_temperatuur_text.set(self.__selected_zonnescherm.get_min_temperatuur())
                 self.__entry_max_temperatuur_text.set(self.__selected_zonnescherm.get_max_temperatuur())
                 self.__selected_licht.set(self.__lichtopties[self.__selected_zonnescherm.get_lichtintensiteit()])
+                # Set de callbacks voor het zonnescherm
+                self.__selected_zonnescherm.set_gem_temperatuur_CB(self.__receive_gem_temperatuur)
+                self.__selected_zonnescherm.set_gem_lichtintensiteit_CB(self.__receive_gem_lichtintensiteiten)
+                self.__selected_zonnescherm.set_status_CB(self.__receive_status)
                 return
 
     def __set_auto(self):
