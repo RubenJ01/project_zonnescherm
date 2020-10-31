@@ -13,7 +13,7 @@ class Zonnescherm:
         self.__max_temperatuur = 0
         self.__min_lichtintensiteit = 0
         self.__status = False
-        self.__auto = False
+        self.__auto = True
 
     def __load_settings(self):
         pass
@@ -21,7 +21,7 @@ class Zonnescherm:
     def __send(self, char):
         pass
 
-    def __recieve(self):
+    def __receive(self):
         pass
 
     def set_gem_temperatuur_CB(self, callback):

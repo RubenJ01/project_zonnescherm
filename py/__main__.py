@@ -1,7 +1,5 @@
 from GUI import *
 from zonnescherm_loader import *
-from zonnescherm import *
-
 
 def main():
     gui = GUI()
@@ -12,9 +10,10 @@ def main():
     zonnescherm_loader.get_zonnescherm_CB(gui.add_zonnescherm)
     zonnescherm_loader.remove_zonnescherm_CB(gui.remove_zonnescherm)
 
-    gui.add_zonnescherm(Zonnescherm("Scherm 1"))
-    gui.add_zonnescherm(Zonnescherm("Scherm 2"))
+    def loop():
+        zonnescherm_loader.update()
 
+    gui.set_update_CB(loop, 1000) # Call loop every second
     gui.start()
 
 
