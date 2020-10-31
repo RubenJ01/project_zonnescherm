@@ -1,13 +1,19 @@
 from GUI import *
-from Zonnescherm_loader import *
+from zonnescherm_loader import *
+from zonnescherm import *
+
 
 def main():
     gui = GUI()
-    zonnescherm_loader = Zonnescherm_loader()
+    zonnescherm_loader = ZonneschermLoader()
 
-    # Set de callbacks voor de zonnescherm_loader. Wanneer er een zonnescherm wordt aangesloten of verwijdert geeft de zonnescherm_loader dit door aan de gui
+    # Set de callbacks voor de zonnescherm_loader.
+    # Wanneer er een zonnescherm wordt aangesloten of verwijdert geeft de zonnescherm_loader dit door aan de gui
     zonnescherm_loader.get_zonnescherm_CB(gui.add_zonnescherm)
     zonnescherm_loader.remove_zonnescherm_CB(gui.remove_zonnescherm)
+
+    gui.add_zonnescherm(Zonnescherm("Scherm 1"))
+    gui.add_zonnescherm(Zonnescherm("Scherm 2"))
 
     gui.start()
 

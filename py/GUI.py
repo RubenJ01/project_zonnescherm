@@ -1,4 +1,8 @@
+from zonnescherm import *
+
 from tkinter import *
+from tkinter import _setit
+
 
 class GUI:
 
@@ -32,17 +36,20 @@ class GUI:
         self.__frameBottom = Frame(self.__root)
         self.__frameBottom.pack(side=BOTTOM, expand=YES, fill=X)
         # Drop down voor selecteren zonnescherm
-        self.__devices = ["Geen zonnescherm", "zonnescherm1", "zonnescherm2", "zonnescherm3", "zonnescherm4", "zonnescherm5" ]
+        self.__devices = ["Geen zonnescherm"]
         self.__selected_device = StringVar()
         self.__selected_device.set(self.__devices[0])
-        OptionMenu(self.__frameTop, self.__selected_device, *self.__devices, command=self.__select_zonnescherm).pack(side=LEFT)
+        self.__zonnescherm_opties = OptionMenu(self.__frameTop, self.__selected_device, *self.__devices,
+                                               command=self.__select_zonnescherm)
+        self.__zonnescherm_opties.pack(side=LEFT)
         # Automatisch button
-        self.__auto_button =  Button(self.__frameTop, text='Zet automatisch uit', command=self.__set_auto)
+        self.__auto_button = Button(self.__frameTop, text='Zet automatisch uit', command=self.__set_auto)
         self.__auto_button.pack(side=LEFT)
         # Dicht open button
-        self.__open_sluit_button =  Button(self.__frameTop, text='Sluit zonnescherm', command=self.__set_open_sluit_zonnescherm)
+        self.__open_sluit_button = Button(self.__frameTop, text='Open zonnescherm',
+                                          command=self.__set_status)
         self.__open_sluit_button.pack(side=LEFT)
-        self.__status_zonnescherm_label = Label(self.__frameTop, text="Status: zonnescherm is open")
+        self.__status_zonnescherm_label = Label(self.__frameTop, text="Status: zonnescherm is dicht")
         self.__status_zonnescherm_label.pack(side=LEFT)
         # Op en uitrol afstand
         self.__entryOprolAfstand = Entry(self.__frameBottom, bg='grey')
@@ -64,62 +71,72 @@ class GUI:
         self.__lichtopties = ["Donker", "Schemerig", "Neutraal", "Licht", "Veel licht"]
         self.__selected_licht = StringVar()
         self.__selected_licht.set(self.__lichtopties[0])
-        OptionMenu(self.__frameBottom, self.__selected_licht, *self.__lichtopties, command=self.__set_licht).pack(side=LEFT)
+        OptionMenu(self.__frameBottom, self.__selected_licht, *self.__lichtopties, command=self.__set_licht).pack(
+            side=LEFT)
 
         # Grafiek tempertatuur
-        self.__canvas.create_line(50,550,550,550, width=2) # x-axis (x,y)(x,y)
-        self.__canvas.create_text(50,25,fill="darkblue",text="Temperatuur celcius", anchor=NW)
-        self.__canvas.create_line(50,50,50,550, width=2)    # y-axis
-        self.__canvas.create_text(550,575,fill="darkblue",text="Gemiddelde temperatuur per minuut", anchor=NE)
+        self.__canvas.create_line(50, 550, 550, 550, width=2)  # x-axis (x,y)(x,y)
+        self.__canvas.create_text(50, 25, fill="darkblue", text="Temperatuur celcius", anchor=NW)
+        self.__canvas.create_line(50, 50, 50, 550, width=2)  # y-axis
+        self.__canvas.create_text(550, 575, fill="darkblue", text="Gemiddelde temperatuur per minuut", anchor=NE)
         # x-axis
         for i in range(11):
             x = 50 + (i * 50)
-            self.__canvas.create_line(x,550,x,50, width=1, dash=(2,5))
-            self.__canvas.create_text(x,550, text='%d'% (1*i), anchor=N)
+            self.__canvas.create_line(x, 550, x, 50, width=1, dash=(2, 5))
+            self.__canvas.create_text(x, 550, text='%d' % (1 * i), anchor=N)
         ## y-axis
         for i in range(11):
             y = 550 - (i * 50)
-            self.__canvas.create_line(50,y,550,y, width=1, dash=(2,5))
-            self.__canvas.create_text(40,y, text='%d'% (5*i-10), anchor=E)
+            self.__canvas.create_line(50, y, 550, y, width=1, dash=(2, 5))
+            self.__canvas.create_text(40, y, text='%d' % (5 * i - 10), anchor=E)
 
-        
         # Grafiek tempertatuur
-        self.__canvas.create_line(675,550,1175,550, width=2) # x-axis (x,y)(x,y)
-        self.__canvas.create_text(675,25,fill="darkblue",text="Lichtintensiteit", anchor=NW)
-        self.__canvas.create_line(675,550,675,50, width=2)    # y-axis
-        self.__canvas.create_text(1175,575,fill="darkblue",text="Gemiddelde lichtintensiteit per minuut", anchor=NE)
+        self.__canvas.create_line(675, 550, 1175, 550, width=2)  # x-axis (x,y)(x,y)
+        self.__canvas.create_text(675, 25, fill="darkblue", text="Lichtintensiteit", anchor=NW)
+        self.__canvas.create_line(675, 550, 675, 50, width=2)  # y-axis
+        self.__canvas.create_text(1175, 575, fill="darkblue", text="Gemiddelde lichtintensiteit per minuut", anchor=NE)
         # x-axis
         for i in range(11):
             x = 675 + (i * 50)
-            self.__canvas.create_line(x,550,x,50, width=1, dash=(2,5))
-            self.__canvas.create_text(x,550, text='%d'% (1*i), anchor=N)
+            self.__canvas.create_line(x, 550, x, 50, width=1, dash=(2, 5))
+            self.__canvas.create_text(x, 550, text='%d' % (1 * i), anchor=N)
         ### y-axis
         for i in range(5):
             y = 550 - (i * 125)
-            self.__canvas.create_line(675,y,1175,y, width=1, dash=(2,5))
-            self.__canvas.create_text(665,y, text=self.__lichtopties[i], anchor=E)
+            self.__canvas.create_line(675, y, 1175, y, width=1, dash=(2, 5))
+            self.__canvas.create_text(665, y, text=self.__lichtopties[i], anchor=E)
 
         # Set de mainloop aan
-        #self.__root.mainloop()
+        # self.__root.mainloop()
 
-    def __select_zonnescherm(self, value):
-        # TODO: Verander deze functie
-        if self.__zonneschermCB != None:
-            self.__zonneschermCB(value)
+    def __select_zonnescherm(self, value=None):
+        if value == "Geen zonnescherm":
+            self.__selected_zonnescherm = None
+            return
+        for zonnescherm in self.__zonneschermen:
+            if zonnescherm.get_name() == value:
+                self.__selected_zonnescherm = zonnescherm
+                return
 
     def __set_auto(self):
-        # TODO: Verander deze functie
-        if self.__autoCB != None:
-            self.__auto = not self.__auto
-            if self.__auto == True:
+        if self.__selected_zonnescherm is not None:
+            if self.__selected_zonnescherm.get_auto():
+                self.__selected_zonnescherm.set_auto(False)
                 self.__auto_button["text"] = "Zet automatisch uit"
             else:
+                self.__selected_zonnescherm.set_auto(True)
                 self.__auto_button["text"] = "Zet automatisch aan"
-            self.__autoCB(self.__auto)
 
     def __set_status(self):
-        # TODO: Verander deze functie
-        pass
+        if self.__selected_zonnescherm is not None:
+            self.__selected_zonnescherm.set_status(not self.__selected_zonnescherm.get_status())
+            if self.__selected_zonnescherm.get_status():
+                self.__open_sluit_button["text"] = "Sluit zonnescherm"
+                self.__status_zonnescherm_label["text"] = "Status: zonnescherm is open"
+            else:
+                self.__open_sluit_button["text"] = "Open zonnescherm"
+                self.__status_zonnescherm_label["text"] = "Status: zonnescherm is dicht"
+
 
     def __set_oprol(self):
         # TODO: Verander deze functie
@@ -128,7 +145,7 @@ class GUI:
 
     def __set_uitrol(self):
         # TODO: Verander deze functie
-       if self.__uitrolCB != None:
+        if self.__uitrolCB != None:
             self.__uitrolCB(self.__entryUitrolAfstand.get())
 
     def __set_min_temperatuur(self):
@@ -167,27 +184,26 @@ class GUI:
         # TODO: Verander deze functie
         pass
 
-    
-    def __set_open_sluit_zonnescherm(self):
-        # TODO: Verwijder deze veroudere functie
-        if self.__open_sluitCB != None:
-            self.__is_open = not self.__is_open
-            if self.__is_open == True:
-                self.__open_sluit_button["text"] = "Sluit zonnescherm"
-                self.__status_zonnescherm_label["text"] = "Status: zonnescherm is open"
-            else:
-                self.__open_sluit_button["text"] = "Open zonnescherm"
-                self.__status_zonnescherm_label["text"] = "Status: zonnescherm is dicht"
-            self.__open_sluitCB(self.__is_open)
-
-
-
     def start(self):
         self.__root.mainloop()
 
     def add_zonnescherm(self, zonnescherm):
         self.__zonneschermen.append(zonnescherm)
+        self.__devices.append(zonnescherm.get_name())
+        self.__refresh_zonneschermen()
 
     def remove_zonnescherm(self, name):
-        # Verwijder zonnescherm bij name
-        pass
+        self.__devices.remove(name)
+        for zonnescherm in self.__zonneschermen:
+            if zonnescherm.get_name() == name:
+                self.__zonneschermen.remove(zonnescherm)
+                break
+        self.__refresh_zonneschermen()
+
+    def __refresh_zonneschermen(self):
+        self.__selected_device.set("Geen Zonnescherm")
+        self.__zonnescherm_opties["menu"].delete(0, 'end')
+        for zonnescherm in self.__devices:
+            self.__zonnescherm_opties["menu"].add_command(label=zonnescherm,
+                                                          command=_setit(self.__selected_device, zonnescherm,
+                                                                         self.__select_zonnescherm))
