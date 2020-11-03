@@ -16,7 +16,7 @@ class ZonneschermLoader:
         self.__remove_CB = cb
 
     def update(self):
-        ports = [("Zonnescherm " + port) for port, desc, hwid in serial.tools.list_ports.comports() if "Arduino Uno" in desc]
+        ports = [("Zonnescherm " + port) for port, desc, hwid in serial.tools.list_ports.comports()]
         added = [port for port in ports if port not in self.__zonneschermen]
         removed = [zonnescherm for zonnescherm in self.__zonneschermen if zonnescherm not in ports]
         for a in added:
