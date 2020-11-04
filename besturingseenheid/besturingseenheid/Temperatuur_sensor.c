@@ -5,16 +5,16 @@
  *  Author: Anton Bonder2
  */ 
 
-#include <avr/interrupt.h>
-#include <stdint.h>
-#include "LDR_sensor.h"
+#include "Temperatuur_sensor.h"
 
 volatile int max_temperatuur = 0;
 volatile int min_temperatuur = 0;
 volatile int huidige_temperatuur = 0;
+volatile int index_seconde_array = 0;
+volatile int index_gemiddelde_array = 0;
+volatile int afgelopen_temperaturen[60];
+volatile int afgelopen_gemiddelde_temperaturen[10];
 volatile double temp = 0;
-
-
 
 void Set_max_temperatuur(int temperatuur){
 	max_temperatuur = temperatuur;
@@ -37,27 +37,42 @@ int Get_huidige_temperatuur(){
 }
 
 void update_temperatuur(){
-	//oud
-	//ADCSRA |= (1<<ADSC); // start conversion
-	//loop_until_bit_is_clear(ADCSRA, ADSC);
-	//nieuw
-	
-	//ADMUX  = (0b01 << REFS0) | ( 0b000 << MUX0) | (1 << ADLAR); // Select AD0
-	//ADCSRA |= (1<<ADSC);   // Start conversie
-    // Wacht tot conversie klaar (ADIF)
-    //while ((ADCSRA & (1 << ADIF)) == 0);
-	
-	//nieuw test 2.000
+	int i;
 	ADMUX  = (1 << REFS0) | (1 << ADLAR); // Select AD0
 	do_conversion();
-	
-	//loop_until_bit_is_clear(ADCSRA, ADSC);
-
 	temp = (ADCH <<2);
 	temp = temp *5;
 	temp = temp/1024;
 	temp = temp -0.5;
 	temp = temp *100;
-	huidige_temperatuur = (int) temp;
-	//return (ADCH <<2) ;//+ ADCL; // 8-bit resolution, left adjusted
+	huidige_temperatuur = round(temp);
+	if (index_seconde_array >= 59){
+		int sum, loop;
+		float avg;
+		sum = avg = 0;
+		
+		for(loop = 0; loop < 59; loop++) {
+			sum = sum + afgelopen_temperaturen[loop];
+		}
+		avg = (float)sum / loop;
+		
+		if (index_gemiddelde_array >= 9){
+			
+			for(i=10-1;i>0;i--)
+			{
+				afgelopen_gemiddelde_temperaturen[i]=afgelopen_gemiddelde_temperaturen[i-1];
+			}
+			afgelopen_gemiddelde_temperaturen[0]=round(avg);
+			
+		}
+		else{
+			afgelopen_gemiddelde_temperaturen[index_gemiddelde_array] = round(avg);
+			index_gemiddelde_array = index_gemiddelde_array + 1;
+		}
+		
+		index_seconde_array = 0;
+	}
+	afgelopen_temperaturen[index_seconde_array] = huidige_temperatuur;
+	index_seconde_array = index_seconde_array +1;
+	
 }

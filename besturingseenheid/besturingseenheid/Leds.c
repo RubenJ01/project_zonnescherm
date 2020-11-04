@@ -16,11 +16,20 @@ volatile int index_blink = 0;
 volatile bool is_open = false;
 
 void Enable_blink(){
-	index_blink = SCH_Add_Task(blink,0,25);
+	PORTD &= ~_BV(PORTD2);
+	PORTD &= ~_BV(PORTD4);
+	if (index_blink == 0){
+	index_blink = SCH_Add_Task(blink,0,10);	
+	}
 }
 
 void Disable_blink(){
-	SCH_Delete_Task(index_blink);
+	if(index_blink != 0){
+		SCH_Delete_Task(index_blink);	
+	}
+	index_blink = 0;
+	PORTD &= ~_BV(PORTD3);
+	yellow_is_on = 0;
 }
 
 void Open(){

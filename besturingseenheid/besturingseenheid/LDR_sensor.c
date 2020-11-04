@@ -4,11 +4,14 @@
  * Created: 2-11-2020 14:34:21
  *  Author: Anton Bonder2
  */ 
-#include <avr/interrupt.h>
-#include <stdint.h>
+#include "LDR_sensor.h"
 
 volatile int min_lichtintensiteit = 0;
 volatile int huidige_lichtintensiteit = 0;
+volatile int afgelopen_lichtintensiteiten[60];
+volatile int afgelopen_gemiddelde_lichtintensiteiten[10];
+volatile int index_seconde_array_lichtintensiteiten = 0;
+volatile int index_seconde_array_lichtintensiteiten_gemiddeld = 0;
 
 void Set_min_lichtintensiteit(int lichtintensiteit){
 	min_lichtintensiteit = lichtintensiteit;
@@ -33,21 +36,62 @@ void do_conversion()
 	}
 }
 
+
+
 void update_lichtintensiteit(){
-	//nieuw 2.0
 	ADMUX  = (1 << REFS0) | (1 << ADLAR) | (1 << MUX0); // Select AD1
-	do_conversion();
-	huidige_lichtintensiteit = (ADCH <<2);
+	do_conversion();
+	
+	int i;
 	
 	
-	
-	
-	//do_conversion();
-	//ADMUX  = (0b01 << REFS0) | ( 0b001 << MUX0) | (1 << ADLAR); // Select AD1
-	//ADCSRA |= (1<<ADSC);   // Start conversie
-	// Wacht tot conversie klaar (ADIF)
-	//while ((ADCSRA & (1 << ADIF)) == 0);
-	//loop_until_bit_is_clear(ADCSRA, ADSC);
 	//huidige_lichtintensiteit = (ADCH <<2);
-	//return (ADCH <<2) ;//+ ADCL; // 8-bit resolution, left adjusted
+	huidige_lichtintensiteit = (ADCH);
+	switch (huidige_lichtintensiteit){
+		case 0 ... 40:
+			huidige_lichtintensiteit = 0; 
+			break;
+		case 41 ... 90:
+			huidige_lichtintensiteit = 1;
+			break;
+		case 91 ... 150:
+			huidige_lichtintensiteit = 2;
+			break;
+		case 151 ... 220:
+			huidige_lichtintensiteit = 3;
+			break;
+		case 221 ... 255:
+			huidige_lichtintensiteit = 4;
+			break;
+	}
+	if (index_seconde_array_lichtintensiteiten >= 59){
+		int sum, loop;
+		float avg;
+		sum = avg = 0;
+		
+		for(loop = 0; loop < 59; loop++) {
+			sum = sum + afgelopen_lichtintensiteiten[loop];
+		}
+		avg = (float)sum / loop;
+		
+		if (index_seconde_array_lichtintensiteiten_gemiddeld >= 9){
+			
+			for(i=10-1;i>0;i--)
+			{
+				afgelopen_gemiddelde_lichtintensiteiten[i]=afgelopen_gemiddelde_lichtintensiteiten[i-1];
+			}
+			afgelopen_gemiddelde_lichtintensiteiten[0]=round(avg);
+			
+		}
+		else{
+			afgelopen_gemiddelde_lichtintensiteiten[index_seconde_array_lichtintensiteiten_gemiddeld] = round(avg);
+			index_seconde_array_lichtintensiteiten_gemiddeld = index_seconde_array_lichtintensiteiten_gemiddeld + 1;
+		}
+		
+		index_seconde_array_lichtintensiteiten = 0;
+	}
+	afgelopen_lichtintensiteiten[index_seconde_array_lichtintensiteiten] = huidige_lichtintensiteit;
+	index_seconde_array_lichtintensiteiten = index_seconde_array_lichtintensiteiten +1;
+	
+	
 }

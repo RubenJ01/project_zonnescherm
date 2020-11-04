@@ -12,5 +12,8 @@ int Get_min_lichtintensiteit();
 int Get_huidige_lichtintensiteit();
 void update_lichtintensiteit();
 void do_conversion();
+#include <avr/interrupt.h>
+#include <stdint.h>
+#include <math.h>
 
 #endif /* LDR_SENSOR_H_ */
