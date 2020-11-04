@@ -111,6 +111,7 @@ class GUI:
         if value == "Geen zonnescherm":
             if self.__selected_zonnescherm is not None:
                 # Remove de callbacks van het zonnescherm
+                self.__selected_zonnescherm.close_connection()
                 self.__selected_zonnescherm.set_gem_temperatuur_CB(None)
                 self.__selected_zonnescherm.set_gem_lichtintensiteit_CB(None)
                 self.__selected_zonnescherm.set_status_CB(None)
@@ -119,6 +120,7 @@ class GUI:
         for zonnescherm in self.__zonneschermen:
             if zonnescherm.get_name() == value:
                 self.__selected_zonnescherm = zonnescherm
+                self.__selected_zonnescherm.open_connection()
                 # Set data van zonnescherm in GUI
                 self.__auto_button[
                     "text"] = "Zet automatisch uit" if self.__selected_zonnescherm.get_auto() else "Zet automatisch aan"
@@ -240,11 +242,20 @@ class GUI:
             self.__update_CB()
         self.__canvas.after(self.__update_milliseconds, self.__update)
 
+    def __update_zonnescherm(self):
+        """
+        Update de gui als er bijvoorbeeld een zonnescherm word toegevoegd.
+        """
+        if self.__selected_zonnescherm is not None:
+            self.__selected_zonnescherm.receive()
+        self.__canvas.after(100, self.__update_zonnescherm)
+
     def start(self):
         """
         Start de gui.
         """
         self.__canvas.after(self.__update_milliseconds, self.__update)
+        self.__canvas.after(100, self.__update_zonnescherm)
         self.__root.mainloop()
 
     def add_zonnescherm(self, zonnescherm):
@@ -265,6 +276,12 @@ class GUI:
         for zonnescherm in self.__zonneschermen:
             if zonnescherm.get_name() == name:
                 self.__zonneschermen.remove(zonnescherm)
+                if self.__selected_zonnescherm is not None:
+                    self.__selected_zonnescherm.close_connection()
+                    self.__selected_zonnescherm.set_gem_temperatuur_CB(None)
+                    self.__selected_zonnescherm.set_gem_lichtintensiteit_CB(None)
+                    self.__selected_zonnescherm.set_status_CB(None)
+                    self.__selected_zonnescherm = None
                 break
         self.__refresh_zonneschermen()
 

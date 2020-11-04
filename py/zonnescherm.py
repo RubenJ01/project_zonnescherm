@@ -1,10 +1,13 @@
+import serial
+
 class Zonnescherm:
 
     def __init__(self, name):
+        self.__name = name
+        self.__ser = None
         self.__gem_temperatuur_CB = None
         self.__gem_lichtintensiteit_CB = None
         self.__status_CB = None
-        self.__name = name
         self.__queue_temperaturen = []
         self.__queue_lichtintensiteiten = []
         self.__oprol_afstand = 0
@@ -15,14 +18,29 @@ class Zonnescherm:
         self.__status = False
         self.__auto = True
 
+    def open_connection(self):
+        self.__ser = serial.Serial(port=self.__name.split()[1].strip(), baudrate=19200, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS)
+        self.__ser.flushInput()
+
+    def close_connection(self):
+        self.__ser.close()
+
     def __load_settings(self):
         pass
 
-    def __send(self, char):
-        pass
+    def __send(self, data):
+        if self.__ser.isOpen():
+            print("Send: ", data)
+            self.__ser.write(chr(data).encode())
+            #self.__ser.flushOutput()
 
-    def __receive(self):
-        pass
+    def receive(self):
+        try:
+            while self.__ser.isOpen() and self.__ser.inWaiting() > 0:
+                print(ord(self.__ser.read(1)))
+            #self.__ser.flushInput()
+        except:
+            pass
 
     def set_gem_temperatuur_CB(self, callback):
         self.__gem_temperatuur_CB = callback
@@ -35,6 +53,7 @@ class Zonnescherm:
 
     def set_auto(self, auto):
         self.__auto = auto
+        self.__send(self.__auto)
 
     def set_status(self, status):
         self.__status = status
