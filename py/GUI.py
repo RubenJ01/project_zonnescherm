@@ -111,7 +111,6 @@ class GUI:
         if value == "Geen zonnescherm":
             if self.__selected_zonnescherm is not None:
                 # Remove de callbacks van het zonnescherm
-                self.__selected_zonnescherm.close_connection()
                 self.__selected_zonnescherm.set_gem_temperatuur_CB(None)
                 self.__selected_zonnescherm.set_gem_lichtintensiteit_CB(None)
                 self.__selected_zonnescherm.set_status_CB(None)
@@ -133,6 +132,9 @@ class GUI:
                 self.__entry_min_temperatuur_text.set(self.__selected_zonnescherm.get_min_temperatuur())
                 self.__entry_max_temperatuur_text.set(self.__selected_zonnescherm.get_max_temperatuur())
                 self.__selected_licht.set(self.__lichtopties[self.__selected_zonnescherm.get_lichtintensiteit()])
+                # Teken grafieken
+                self.__draw_grafiek_temp(self.__selected_zonnescherm.get_temperaturen())
+                self.__draw_grafiek_lichtintensiteiten(self.__selected_zonnescherm.get_lichtintensiteiten())
                 # Set de callbacks voor het zonnescherm
                 self.__selected_zonnescherm.set_gem_temperatuur_CB(self.__receive_gem_temperatuur)
                 self.__selected_zonnescherm.set_gem_lichtintensiteit_CB(self.__receive_gem_lichtintensiteiten)
@@ -224,13 +226,11 @@ class GUI:
             elif value == "Veel licht":
                 self.__selected_zonnescherm.set_licht(4)
 
-    def __receive_gem_temperatuur(temperaturen):
-        # TODO: Verander deze functie
-        pass
+    def __receive_gem_temperatuur(self, temperaturen):
+        self.__draw_grafiek_temp(temperaturen)
 
     def __receive_gem_lichtintensiteiten(lichtintensiteiten):
-        # TODO: Verander deze functie
-        pass
+        self.__draw_grafiek_lichtintensiteiten(lichtintensiteiten)
 
     def __receive_status(self, status):
         """
@@ -305,7 +305,7 @@ class GUI:
         """
         Refreshed de lijst met zonneschermen.
         """
-        self.__selected_device.set("Geen Zonnescherm")
+        self.__selected_device.set("Geen zonnescherm")
         self.__zonnescherm_opties["menu"].delete(0, 'end')
         for zonnescherm in self.__devices:
             self.__zonnescherm_opties["menu"].add_command(label=zonnescherm,
@@ -324,7 +324,7 @@ class GUI:
             punt_op_x = ((index + 1) * 50)
             punten.append([punt_op_x, punt_op_y])
         for index in range(len(punten)):
-            if index is not 0:
+            if index != 0:
                 self.__canvas.create_line(punten[index][0], punten[index][1], punten[index - 1][0], punten[index - 1][1],
                         fill="blue", tags="temp")
 
@@ -334,11 +334,11 @@ class GUI:
         :param licht_intensiteiten: lijst van licht intensiteiten ex: ["licht", "schemerig", "neutraal"] etc...
         """
         y_waarde_bij_licht = {
-            "veel licht" : 50,
-            "licht" : 175,
-            "neutraal" : 300,
-            "schemerig" : 425,
-            "donker" : 550
+            0: 50,
+            1: 175,
+            2: 300,
+            3: 425,
+            4: 550
         }
         punten = []
         for index, licht in enumerate(licht_intensiteiten):
@@ -346,6 +346,6 @@ class GUI:
             punt_op_x = 625 + ((index + 1) * 50)
             punten.append([punt_op_x, punt_op_y])
         for index in range(len(punten)):
-            if index is not 0:
+            if index != 0:
                 self.__canvas.create_line(punten[index][0], punten[index][1], punten[index - 1][0], punten[index - 1][1],
                         fill="blue", tags="temp")

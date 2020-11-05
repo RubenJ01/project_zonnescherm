@@ -1,10 +1,11 @@
 import serial
+import time
 
 class Zonnescherm:
 
     def __init__(self, name):
         self.__name = name
-        self.__ser = None
+        self.__ser = serial.Serial(port=self.__name.split()[1].strip(), baudrate=19200, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS)
         self.__gem_temperatuur_CB = None
         self.__gem_lichtintensiteit_CB = None
         self.__status_CB = None
@@ -17,30 +18,71 @@ class Zonnescherm:
         self.__min_lichtintensiteit = 0
         self.__status = False
         self.__auto = True
+        self.__load_settings()
 
     def open_connection(self):
-        self.__ser = serial.Serial(port=self.__name.split()[1].strip(), baudrate=19200, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS)
         self.__ser.flushInput()
 
     def close_connection(self):
         self.__ser.close()
 
     def __load_settings(self):
-        pass
+        while self.__ser.inWaiting() == 0:
+            self.__send(1)
+            time.sleep(2.0) # Wacht 2 seconden
+        counter = 0
+        try:
+            while self.__ser.isOpen() and (self.__ser.inWaiting() > 0 or counter < 27):
+                data = ord(self.__ser.read(1))
+                print("Load: ", counter, data)
+                if counter == 0: # Zet de auto
+                    self.__auto = bool(data)
+                elif counter == 1: # Zet de status (open of dicht)
+                    self.__status = bool(data)
+                elif counter == 2: # Zet de oprol_afstand
+                    self.__oprol_afstand = data
+                elif counter == 3: # Zet de uitrol_afstand
+                    self.__uitrol_afstand = data
+                elif counter == 4: # Zet de min temperatuur
+                    self.__min_temperatuur = data
+                elif counter == 5: # Zet de max temperatuur
+                    self.__max_temperatuur = data
+                elif counter == 6: # Zet de min lichtintensiteit
+                    self.__min_lichtintensiteit = data
+                elif counter >= 7 and counter <= 16: # Zet de gemiddelde temperaturen in een lijstje
+                    self.__queue_temperaturen.append(data)
+                elif counter >= 17 and counter <= 26: # Zet de gemiddelde lichtintensiteiten in een lijstje
+                    self.__queue_lichtintensiteiten.append(data)
+                counter = counter+1
+        except:
+            pass
 
     def __send(self, data):
         if self.__ser.isOpen():
             print("Send: ", data)
             self.__ser.write(chr(data).encode())
-            #self.__ser.flushOutput()
 
     def receive(self):
         try:
             while self.__ser.isOpen() and self.__ser.inWaiting() > 0:
-                print(ord(self.__ser.read(1)))
-            #self.__ser.flushInput()
+                data = ord(self.__ser.read(1))
+                print("Receive:", data)
+                if data <= 1: # Bij een waarde van 1 of lager betekent het dat het om de status gaat van het zonnescherm
+                    self.__status = data
+                    if self.__status_CB is not None:
+                        self.__status_CB(self.__status)
+                elif data <= 6: # Bij een waarde van 2 tot en met 6 betekent het dat er een nieuwe gemiddelde lichtintensiteit is
+                    self.__queue_lichtintensiteiten.pop(0)
+                    self.__queue_lichtintensiteiten.append(data-2)
+                    if self.__gem_lichtintensiteit_CB is not None:
+                        self.__gem_lichtintensiteit_CB(self.__queue_lichtintensiteiten)
+                elif data <= 56: # Bij een waarde van 7 tot en met 56 betekent het dat er een nieuwe gemiddelde temperatuur is
+                    self.__queue_temperaturen.pop(0)
+                    self.__queue_temperaturen.append(data-7)
+                    if self.__gem_temperatuur_CB is not None:
+                        self.__gem_temperatuur_CB(self.__queue_temperaturen)
         except:
-            print("receive failed")
+            pass
 
     def set_gem_temperatuur_CB(self, callback):
         self.__gem_temperatuur_CB = callback
