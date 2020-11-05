@@ -168,28 +168,44 @@ class GUI:
         Stelt de oprol afstand in.
         """
         if self.__selected_zonnescherm is not None:
-            self.__selected_zonnescherm.set_oprol(self.__entry_oprol_text.get())
+            try:
+                oprol = int(self.__entry_oprol_text.get())
+                self.__selected_zonnescherm.set_oprol(oprol)
+            except:
+                pass
 
     def __set_uitrol(self):
         """
         Stelt de uitrol afstand in.
         """
         if self.__selected_zonnescherm is not None:
-            self.__selected_zonnescherm.set_uitrol(self.__entry_uitrol_text.get())
+            try:
+                uitrol = int(self.__entry_uitrol_text.get())
+                self.__selected_zonnescherm.set_uitrol(uitrol)
+            except:
+                pass
 
     def __set_min_temperatuur(self):
         """
         Stelt de minimum temperatuur in.
         """
         if self.__selected_zonnescherm is not None:
-            self.__selected_zonnescherm.set_min_temperatuur(self.__entry_min_temperatuur_text.get())
+            try:
+                min_temperatuur = int(self.__entry_min_temperatuur_text.get())
+                self.__selected_zonnescherm.set_min_temperatuur(min_temperatuur)
+            except:
+                pass
 
     def __set_max_temperatuur(self):
         """
         Stelt de maximum temperatuur in.
         """
         if self.__selected_zonnescherm is not None:
-            self.__selected_zonnescherm.set_max_temperatuur(self.__entry_max_temperatuur_text.get())
+            try:
+                max_temperatuur = int(self.__entry_max_temperatuur_text.get())
+                self.__selected_zonnescherm.set_max_temperatuur(max_temperatuur)
+            except:
+                pass
 
     def __set_licht(self, value):
         """

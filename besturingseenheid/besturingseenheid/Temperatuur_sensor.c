@@ -1,10 +1,3 @@
-/*
- * Temperatuur_sensor.c
- *
- * Created: 2-11-2020 11:47:14
- *  Author: Anton Bonder2
- */ 
-
 #include "Temperatuur_sensor.h"
 
 volatile int max_temperatuur = 0;

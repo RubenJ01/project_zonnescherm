@@ -40,7 +40,7 @@ class Zonnescherm:
                 print(ord(self.__ser.read(1)))
             #self.__ser.flushInput()
         except:
-            pass
+            print("receive failed")
 
     def set_gem_temperatuur_CB(self, callback):
         self.__gem_temperatuur_CB = callback
@@ -53,25 +53,38 @@ class Zonnescherm:
 
     def set_auto(self, auto):
         self.__auto = auto
+        self.__send(2)
         self.__send(self.__auto)
 
     def set_status(self, status):
         self.__status = status
+        self.__send(3)
+        self.__send(self.__status)
 
     def set_oprol(self, oprolafstand):
         self.__oprol_afstand = oprolafstand
+        self.__send(4)
+        self.__send(self.__oprol_afstand)
 
     def set_uitrol(self, uitrolafstand):
         self.__uitrol_afstand = uitrolafstand
+        self.__send(5)
+        self.__send(self.__uitrol_afstand)
 
     def set_min_temperatuur(self, mintemperatuur):
         self.__min_temperatuur = mintemperatuur
+        self.__send(6)
+        self.__send(self.__min_temperatuur)
 
     def set_max_temperatuur(self, maxtemperatuur):
         self.__max_temperatuur = maxtemperatuur
+        self.__send(7)
+        self.__send(self.__max_temperatuur)
 
     def set_licht(self, minlichtintensiteit):
         self.__min_lichtintensiteit = minlichtintensiteit
+        self.__send(8)
+        self.__send(self.__min_lichtintensiteit)
 
     def get_name(self):
         return self.__name

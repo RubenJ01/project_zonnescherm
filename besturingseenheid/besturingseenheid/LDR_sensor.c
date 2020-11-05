@@ -1,9 +1,3 @@
-/*
- * LDR_sensor.c
- *
- * Created: 2-11-2020 14:34:21
- *  Author: Anton Bonder2
- */ 
 #include "LDR_sensor.h"
 
 volatile int min_lichtintensiteit = 0;

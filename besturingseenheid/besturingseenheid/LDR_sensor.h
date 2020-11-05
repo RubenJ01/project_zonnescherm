@@ -1,19 +1,14 @@
-/*
- * LDR_sensor.h
- *
- * Created: 2-11-2020 14:35:56
- *  Author: Anton Bonder2
- */ 
-
 #ifndef LDR_SENSOR_H_
 #define LDR_SENSOR_H_
-void Set_min_lichtintensiteit();
+
+#include <avr/interrupt.h>
+#include <stdint.h>
+#include <math.h>
+
+void Set_min_lichtintensiteit(int lichtintensiteit);
 int Get_min_lichtintensiteit();
 int Get_huidige_lichtintensiteit();
 void update_lichtintensiteit();
 void do_conversion();
-#include <avr/interrupt.h>
-#include <stdint.h>
-#include <math.h>
 
 #endif /* LDR_SENSOR_H_ */
