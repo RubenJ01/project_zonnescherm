@@ -1,14 +1,18 @@
 #include "LDR_sensor.h"
 
 volatile int min_lichtintensiteit = 0;
-volatile int huidige_lichtintensiteit = 0;
 volatile int afgelopen_lichtintensiteiten[60];
 volatile int afgelopen_gemiddelde_lichtintensiteiten[10];
 volatile int index_seconde_array_lichtintensiteiten = 0;
 volatile int index_seconde_array_lichtintensiteiten_gemiddeld = 0;
+volatile void (*lichtintensiteit_ptr)(int) = 0;
 
 void Set_min_lichtintensiteit(int lichtintensiteit){
 	min_lichtintensiteit = lichtintensiteit;
+}
+
+void Set_gemiddelde_lichtintensiteit_CB(void* callback) {
+	lichtintensiteit_ptr = callback;
 }
 
 int Get_min_lichtintensiteit(){
@@ -16,7 +20,11 @@ int Get_min_lichtintensiteit(){
 }
 
 int Get_huidige_lichtintensiteit(){
-	return huidige_lichtintensiteit;
+	return afgelopen_gemiddelde_lichtintensiteiten[(index_seconde_array_lichtintensiteiten_gemiddeld == 9 ? 9 : ((index_seconde_array_lichtintensiteiten_gemiddeld == 0) ? 0 : index_seconde_array_lichtintensiteiten_gemiddeld-1))];
+}
+
+int* Get_afgelopen_gemiddelde_lichtintensiteiten() {
+	return afgelopen_gemiddelde_lichtintensiteiten;
 }
 
 void do_conversion()
@@ -40,7 +48,7 @@ void update_lichtintensiteit(){
 	
 	
 	//huidige_lichtintensiteit = (ADCH <<2);
-	huidige_lichtintensiteit = (ADCH);
+	int huidige_lichtintensiteit = (ADCH);
 	switch (huidige_lichtintensiteit){
 		case 0 ... 40:
 			huidige_lichtintensiteit = 0; 
@@ -80,6 +88,9 @@ void update_lichtintensiteit(){
 		else{
 			afgelopen_gemiddelde_lichtintensiteiten[index_seconde_array_lichtintensiteiten_gemiddeld] = round(avg);
 			index_seconde_array_lichtintensiteiten_gemiddeld = index_seconde_array_lichtintensiteiten_gemiddeld + 1;
+		}
+		if (lichtintensiteit_ptr != 0) {
+			lichtintensiteit_ptr(Get_huidige_lichtintensiteit());
 		}
 		
 		index_seconde_array_lichtintensiteiten = 0;

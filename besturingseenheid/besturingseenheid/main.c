@@ -13,17 +13,7 @@
 }void init_adc()
 {
 	ADCSRA = (1<<ADEN)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);
-}void transmit(uint8_t data)
-{
-	// wait for an empty transmit buffer
-	// UDRE is set when the transmit buffer is empty
-	loop_until_bit_is_set(UCSR0A, UDRE0);
-	// send the data
-	UDR0 = data;
-}uint8_t receive(void) {
-	loop_until_bit_is_set(UCSR0A, RXC0);
-	return UDR0;
-}
+}
 
 void init(){
 	DDRD |= _BV(DDD2);
@@ -36,16 +26,61 @@ void init(){
 	SCH_Start();
 }
 
+uint8_t receive(void) {
+	loop_until_bit_is_set(UCSR0A, RXC0);
+	return UDR0;
+}
+
+void transmit(uint8_t data)
+{
+	// wait for an empty transmit buffer
+	// UDRE is set when the transmit buffer is empty
+	loop_until_bit_is_set(UCSR0A, UDRE0);
+	// send the data
+	UDR0 = data;
+}
+
+void transmit_open() {
+	transmit(open);
+}
+
+void transmit_lichtintensiteit(uint8_t lichtintensiteit) {
+	transmit(lichtintensiteit + 2);
+}
+
+void transmit_temperatuur(uint8_t temperatuur) {
+	transmit(temperatuur + 7);
+}
+
+void transmit_all() {
+	transmit(automatic); // Verstuur automatic
+	transmit(open); // Verstuur of zonnescherm open of dicht is
+	transmit(Get_oprol_afstand()); // Verstuur oprolafstand
+	transmit(Get_uitrol_afstand()); // Verstuur uitrolafstand
+	transmit(Get_min_temperatuur()); // Verstuur min temperatuur
+	transmit(Get_max_temperatuur()); // Verstuur max temperatuur
+	transmit(Get_min_lichtintensiteit()); // Verstuur min lichtintensiteit
+	// Verstuur de afgelopen 10 gemiddelde temperaturen
+	int* gemiddelde_temperaturen = Get_afgelopen_gemiddelde_temperaturen();
+	for (int i = 0; i < 10; ++i) {		transmit(gemiddelde_temperaturen[i]);	}
+	// Verstuur de afgelopen 10 gemiddelde lichtintensiteiten
+	int* gemiddelde_lichtintensiteiten = Get_afgelopen_gemiddelde_lichtintensiteiten();
+	for (int i = 0; i < 10; ++i) {
+		transmit(gemiddelde_lichtintensiteiten[i]);	
+	}
+}
+
 void verwerk_data(){
 	if (data_type == 0) {
+		// Verzoek om alle instellingen op te sturen
+		if (data == 1) {
+			transmit_all();
+			return;
+		}
 		data_type = data;
-		//transmit(data_type); // Tijdelijk transmit voor debuggen
 	}
 	else {
 		switch (data_type){
-			case 1: // Verzoek om alle instellingen op te sturen
-				// TODO: stuur alle instellingen naar python
-				break;
 			case 2: // Set automatic
 				automatic = data ? true : false;
 				break;
@@ -70,7 +105,6 @@ void verwerk_data(){
 				break;
 		}
 		data_type = 0;
-		//transmit(data); // Tijdelijk transmit voor debuggen
 	}
 	/*if (data == 0b00000001){
 		Enable_blink();
@@ -92,16 +126,18 @@ void Update_main() {
 		else {
 			open = false;
 		}
+		// Als open is verandert door de automatic roepen we transmit_open() aan
+		if (open != Is_open()) {
+			transmit_open();
+		}
 	}
 	// Check of de status van het zonnescherm is verandert, zo ja dan sluiten we of openen we het zonnescherm
 	if (open != Is_open()) {
-		if (open == true) { 
-			open = false; 
-			Close();
+		if (open) { 
+			Open();
 		}
 		else {
-			open = true;
-			Open();
+			Close();
 		}
 	}
 	// Check of het zonnescherm volledig is opgerold of uitgerold, als dat niet het geval is dan laten we de gele led knipperen
@@ -129,9 +165,15 @@ void Update_main() {
 
 int main(void)
 {
+	// Intialiseer alles
 	init();
 	uart_init();	init_adc();	
-	Close(); // Close zonnescherm standaard zodat het lode lampje brandt
+	// Close zonnescherm standaard zodat het rode lode lampje brandt
+	Close();
+	
+	// Deze twee callbacks zorgen ervoor dat wanneer er een nieuwe gemiddelde temperatuur of lichtintensiteit binnenkomt dat die automatisch verstuurd wordt naar de python applicatie
+	Set_gemiddelde_lichtintensiteit_CB(transmit_lichtintensiteit);
+	Set_gemiddelde_temperatuur_CB(transmit_temperatuur);
 	
 	//tasken toevoegen
 	SCH_Add_Task(update_afstand,0,50); // Update elke 0.5 seconden
@@ -142,16 +184,12 @@ int main(void)
 	
 	while (1) 
     {	
-		//transmit(Get_huidige_lichtintensiteit()); _delay_ms(1000);
-		//transmit(Get_huidige_temperatuur()); _delay_ms(1000);
-		//transmit(Get_huidige_afstand()); _delay_ms(1000);
-		
-		//check of data binnen is
+		//check of er data binnen is
 		if (UCSR0A & (1<<RXC0)){
 			data = receive();
-			transmit(data);
 			verwerk_data();
 		}
+		// Dispatch tasks
 		SCH_Dispatch_Tasks();
 		
     }

@@ -42,18 +42,18 @@ uint16_t Get_huidige_afstand(){
 	return huidige_afstand;
 }
 
-void Set_uitrol_afstand(int uitrol){
+void Set_uitrol_afstand(uint8_t uitrol) {
 	uitrol_afstand = uitrol;
 }
 
-void Set_oprol_afstand(int oprol){
+void Set_oprol_afstand(uint8_t oprol) {
 	oprol_afstand = oprol;
 }
 
-int Get_uitrol_afstand(void){
+uint8_t Get_uitrol_afstand(void) {
 	return uitrol_afstand;
 }
 
-int Get_oprol_afstand(void){
+uint8_t Get_oprol_afstand(void) {
 	return oprol_afstand;
 }

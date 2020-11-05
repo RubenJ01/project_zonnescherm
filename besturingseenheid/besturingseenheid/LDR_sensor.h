@@ -6,8 +6,10 @@
 #include <math.h>
 
 void Set_min_lichtintensiteit(int lichtintensiteit);
+void Set_gemiddelde_lichtintensiteit_CB(void* callback);
 int Get_min_lichtintensiteit();
 int Get_huidige_lichtintensiteit();
+int* Get_afgelopen_gemiddelde_lichtintensiteiten();
 void update_lichtintensiteit();
 void do_conversion();
 
