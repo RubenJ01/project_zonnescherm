@@ -1,20 +1,17 @@
-/*
- * Temperatuur_sensor.c
- *
- * Created: 2-11-2020 11:47:14
- *  Author: Anton Bonder2
- */ 
-
 #include "Temperatuur_sensor.h"
 
 volatile int max_temperatuur = 0;
 volatile int min_temperatuur = 0;
-volatile int huidige_temperatuur = 0;
 volatile int index_seconde_array = 0;
 volatile int index_gemiddelde_array = 0;
 volatile int afgelopen_temperaturen[60];
 volatile int afgelopen_gemiddelde_temperaturen[10];
 volatile double temp = 0;
+volatile void (*temperatuur_ptr)(int) = 0;
+
+void Set_gemiddelde_temperatuur_CB(void* callback) {
+	temperatuur_ptr = callback;
+}
 
 void Set_max_temperatuur(int temperatuur){
 	max_temperatuur = temperatuur;
@@ -33,7 +30,11 @@ int Get_min_temperatuur(){
 }
 
 int Get_huidige_temperatuur(){
-	return huidige_temperatuur;
+	return afgelopen_gemiddelde_temperaturen[(index_gemiddelde_array == 9 ? 9 : ((index_gemiddelde_array == 0) ? 0 : index_gemiddelde_array-1))];
+}
+
+int* Get_afgelopen_gemiddelde_temperaturen() {
+	return afgelopen_gemiddelde_temperaturen;
 }
 
 void update_temperatuur(){
@@ -45,7 +46,6 @@ void update_temperatuur(){
 	temp = temp/1024;
 	temp = temp -0.5;
 	temp = temp *100;
-	huidige_temperatuur = round(temp);
 	if (index_seconde_array >= 59){
 		int sum, loop;
 		float avg;
@@ -69,10 +69,13 @@ void update_temperatuur(){
 			afgelopen_gemiddelde_temperaturen[index_gemiddelde_array] = round(avg);
 			index_gemiddelde_array = index_gemiddelde_array + 1;
 		}
+		if (temperatuur_ptr != 0) {
+			temperatuur_ptr(Get_huidige_temperatuur());
+		}
 		
 		index_seconde_array = 0;
 	}
-	afgelopen_temperaturen[index_seconde_array] = huidige_temperatuur;
+	afgelopen_temperaturen[index_seconde_array] = round(temp);
 	index_seconde_array = index_seconde_array +1;
 	
 }
