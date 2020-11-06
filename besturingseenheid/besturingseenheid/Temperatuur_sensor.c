@@ -6,6 +6,7 @@ volatile int index_seconde_array = 0;
 volatile int index_gemiddelde_array = 0;
 volatile int afgelopen_temperaturen[60];
 volatile int afgelopen_gemiddelde_temperaturen[10];
+volatile int huidige_temperatuur = 0;
 volatile double temp = 0;
 volatile void (*temperatuur_ptr)(int) = 0;
 
@@ -30,7 +31,7 @@ int Get_min_temperatuur(){
 }
 
 int Get_huidige_temperatuur(){
-	return afgelopen_gemiddelde_temperaturen[(index_gemiddelde_array == 9 ? 9 : ((index_gemiddelde_array == 0) ? 0 : index_gemiddelde_array-1))];
+	return huidige_temperatuur;
 }
 
 int* Get_afgelopen_gemiddelde_temperaturen() {
@@ -63,10 +64,12 @@ void update_temperatuur(){
 				afgelopen_gemiddelde_temperaturen[i]=afgelopen_gemiddelde_temperaturen[i-1];
 			}
 			afgelopen_gemiddelde_temperaturen[0]=round(avg);
+			huidige_temperatuur=round(avg);
 			
 		}
 		else{
 			afgelopen_gemiddelde_temperaturen[index_gemiddelde_array] = round(avg);
+			huidige_temperatuur=round(avg);
 			index_gemiddelde_array = index_gemiddelde_array + 1;
 		}
 		if (temperatuur_ptr != 0) {
