@@ -1,7 +1,7 @@
 #include "Temperatuur_sensor.h"
 
-volatile int max_temperatuur = 0;
-volatile int min_temperatuur = 0;
+volatile int max_temperatuur = 20;
+volatile int min_temperatuur = 15;
 volatile int index_seconde_array = 0;
 volatile int index_gemiddelde_array = 0;
 volatile int afgelopen_temperaturen[60];

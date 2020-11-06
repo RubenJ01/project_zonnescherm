@@ -1,6 +1,6 @@
 #include "LDR_sensor.h"
 
-volatile int min_lichtintensiteit = 0;
+volatile int min_lichtintensiteit = 2;
 volatile int afgelopen_lichtintensiteiten[60];
 volatile int afgelopen_gemiddelde_lichtintensiteiten[10];
 volatile int huidige_lichtintensiteit2 = 2;
