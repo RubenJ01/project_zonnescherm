@@ -341,7 +341,7 @@ class GUI:
             4: 550
         }
         punten = []
-        for index, licht in enumerate([0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0]):
+        for index, licht in enumerate(licht_intensiteiten):
             punt_op_y = y_waarde_bij_licht[licht]
             punt_op_x = 625 + ((index + 1) * 50)
             punten.append([punt_op_x, punt_op_y])
