@@ -21,6 +21,11 @@ class Zonnescherm:
         self.__load_settings()
 
     def open_connection(self):
+        try:
+            self.__ser.flushInput()
+        except:
+            self.__ser.open()
+
         self.__ser.flushInput()
 
     def close_connection(self):
