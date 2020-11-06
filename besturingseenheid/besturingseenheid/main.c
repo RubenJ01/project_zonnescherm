@@ -120,7 +120,7 @@ void Update_main() {
 	if (automatic == true) {
 		int temperatuur = Get_huidige_temperatuur();
 		int lichtintesiteit = Get_huidige_lichtintensiteit();
-		if (Get_min_temperatuur() <= temperatuur && Get_max_temperatuur() >= temperatuur && Get_min_lichtintensiteit() <= lichtintesiteit) {
+		if ((Get_min_temperatuur() <= temperatuur && Get_max_temperatuur() >= temperatuur) || Get_min_lichtintensiteit() <= lichtintesiteit) {
 			open = true;
 		}
 		else {
