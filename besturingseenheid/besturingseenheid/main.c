@@ -85,8 +85,8 @@ void verwerk_data(){
 				automatic = data ? true : false;
 				break;
 			case 3: // Open of sluit zonnescherm
-				if (open == true)	{ open = false; }
-				else				{ open = true;  }
+				if (open == true)	{ open = false; Close(); }
+				else				{ open = true; Open(); }
 				break;
 			case 4: // Set oprol_afstand
 				Set_oprol_afstand(data);
