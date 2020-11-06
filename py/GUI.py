@@ -2,6 +2,7 @@ from zonnescherm import *
 
 from tkinter import *
 from tkinter import _setit
+from tkinter import Canvas
 
 
 class GUI:
@@ -49,7 +50,7 @@ class GUI:
         self.__entry_uitrol_text.set("0")
         Entry(self.__frameBottom, textvariable=self.__entry_uitrol_text, bg='grey').pack(side=LEFT)
         Button(self.__frameBottom, text='Zet uitrol afstand', command=self.__set_uitrol).pack(side=LEFT)
-        # Minimum en maxim temperatuur
+        # Minimum en maximum temperatuur
         self.__entry_min_temperatuur_text = StringVar()
         self.__entry_min_temperatuur_text.set("0")
         Entry(self.__frameBottom, textvariable=self.__entry_min_temperatuur_text, bg='grey').pack(side=LEFT)
@@ -66,7 +67,9 @@ class GUI:
         self.__selected_licht.set(self.__lichtopties[0])
         OptionMenu(self.__frameBottom, self.__selected_licht, *self.__lichtopties, command=self.__set_licht).pack(
             side=LEFT)
-
+        # id voor de grafieken initialiseren
+        self.lichtintensiteit_id_lijn = None
+        self.temperatuur_id_lijn = None
         # Grafiek tempertatuur
         self.__canvas.create_line(50, 550, 500, 550, width=2)  # x-axis (x,y)(x,y)
         self.__canvas.create_text(50, 25, fill="darkblue", text="Temperatuur celcius", anchor=NW)
@@ -229,7 +232,7 @@ class GUI:
     def __receive_gem_temperatuur(self, temperaturen):
         self.__draw_grafiek_temp(temperaturen)
 
-    def __receive_gem_lichtintensiteiten(lichtintensiteiten):
+    def __receive_gem_lichtintensiteiten(self, lichtintensiteiten):
         self.__draw_grafiek_lichtintensiteiten(lichtintensiteiten)
 
     def __receive_status(self, status):
@@ -312,33 +315,35 @@ class GUI:
                                                           command=_setit(self.__selected_device, zonnescherm,
                                                                          self.__select_zonnescherm))
 
-    def __draw_grafiek_temp(self, temperaturen):
+    def draw_grafiek_temp(self, temperaturen):
         """
         Tekent de grafiek met temperaturen.
         :param temperaturen: lijst van temperaturen ex: [10, 20, 40, -5] etc...
         """
+        self.__canvas.after(1000, self.__canvas.delete, self.temperatuur_id_lijn)
         punten = []
         for index, temp in enumerate(temperaturen):
-            temp = (temp) / 50
+            temp = temp / 50
             punt_op_y = 550 - (500 * temp)
             punt_op_x = ((index + 1) * 50)
             punten.append([punt_op_x, punt_op_y])
         for index in range(len(punten)):
             if index != 0:
-                self.__canvas.create_line(punten[index][0], punten[index][1], punten[index - 1][0], punten[index - 1][1],
+                self.temperatuur_id_lijn = self.__canvas.create_line(punten[index][0], punten[index][1], punten[index - 1][0], punten[index - 1][1],
                         fill="blue", tags="temp")
 
-    def __draw_grafiek_lichtintensiteiten(self, licht_intensiteiten):
+    def draw_grafiek_lichtintensiteiten(self, licht_intensiteiten):
         """
         Tekent de grafiek met lichtintensiteiten.
         :param licht_intensiteiten: lijst van licht intensiteiten ex: ["licht", "schemerig", "neutraal"] etc...
         """
+        self.__canvas.after(1000, self.__canvas.delete, self.lichtintensiteit_id_lijn)
         y_waarde_bij_licht = {
-            0: 50,
-            1: 175,
+            0: 550,
+            1: 425,
             2: 300,
-            3: 425,
-            4: 550
+            3: 175,
+            4: 50
         }
         punten = []
         for index, licht in enumerate(licht_intensiteiten):
@@ -347,5 +352,5 @@ class GUI:
             punten.append([punt_op_x, punt_op_y])
         for index in range(len(punten)):
             if index != 0:
-                self.__canvas.create_line(punten[index][0], punten[index][1], punten[index - 1][0], punten[index - 1][1],
+                self.lichtintensiteit_id_lijn = self.__canvas.create_line(punten[index][0], punten[index][1], punten[index - 1][0], punten[index - 1][1],
                         fill="blue", tags="temp")
