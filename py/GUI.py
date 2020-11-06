@@ -81,7 +81,7 @@ class GUI:
         for i in range(11):
             y = 550 - (i * 50)
             self.__canvas.create_line(50, y, 500, y, width=1, dash=(2, 5))
-            self.__canvas.create_text(40, y, text='%d' % (5 * i - 10), anchor=E)
+            self.__canvas.create_text(40, y, text='%d' % (5 * i), anchor=E)
 
         # Grafiek lichtintensiteit
         self.__canvas.create_line(675, 550, 1125, 550, width=2)  # x-axis (x,y)(x,y)
@@ -319,7 +319,7 @@ class GUI:
         """
         punten = []
         for index, temp in enumerate(temperaturen):
-            temp = (temp + 10) / 50
+            temp = (temp) / 50
             punt_op_y = 550 - (500 * temp)
             punt_op_x = ((index + 1) * 50)
             punten.append([punt_op_x, punt_op_y])
@@ -341,7 +341,7 @@ class GUI:
             4: 550
         }
         punten = []
-        for index, licht in enumerate(licht_intensiteiten):
+        for index, licht in enumerate([0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0]):
             punt_op_y = y_waarde_bij_licht[licht]
             punt_op_x = 625 + ((index + 1) * 50)
             punten.append([punt_op_x, punt_op_y])

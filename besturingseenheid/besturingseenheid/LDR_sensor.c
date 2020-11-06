@@ -3,7 +3,7 @@
 volatile int min_lichtintensiteit = 0;
 volatile int afgelopen_lichtintensiteiten[60];
 volatile int afgelopen_gemiddelde_lichtintensiteiten[10];
-volatile int huidige_lichtintensiteit = 0;
+volatile int huidige_lichtintensiteit2 = 2;
 volatile int index_seconde_array_lichtintensiteiten = 0;
 volatile int index_seconde_array_lichtintensiteiten_gemiddeld = 0;
 volatile void (*lichtintensiteit_ptr)(int) = 0;
@@ -21,7 +21,7 @@ int Get_min_lichtintensiteit(){
 }
 
 int Get_huidige_lichtintensiteit(){
-	return huidige_lichtintensiteit;
+	return huidige_lichtintensiteit2;
 }
 
 int* Get_afgelopen_gemiddelde_lichtintensiteiten() {
@@ -84,12 +84,12 @@ void update_lichtintensiteit(){
 				afgelopen_gemiddelde_lichtintensiteiten[i]=afgelopen_gemiddelde_lichtintensiteiten[i-1];
 			}
 			afgelopen_gemiddelde_lichtintensiteiten[0]=round(avg);
-			huidige_lichtintensiteit=round(avg);
+			huidige_lichtintensiteit2=round(avg);
 			
 		}
 		else{
 			afgelopen_gemiddelde_lichtintensiteiten[index_seconde_array_lichtintensiteiten_gemiddeld] = round(avg);
-			huidige_lichtintensiteit=round(avg);
+			huidige_lichtintensiteit2=round(avg);
 			index_seconde_array_lichtintensiteiten_gemiddeld = index_seconde_array_lichtintensiteiten_gemiddeld + 1;
 		}
 		if (lichtintensiteit_ptr != 0) {

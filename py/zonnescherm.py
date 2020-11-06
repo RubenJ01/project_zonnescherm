@@ -50,7 +50,7 @@ class Zonnescherm:
                 elif counter == 6: # Zet de min lichtintensiteit
                     self.__min_lichtintensiteit = data
                 elif counter >= 7 and counter <= 16: # Zet de gemiddelde temperaturen in een lijstje
-                    self.__queue_temperaturen.append(data-10) # -10 omdat we willen dat de temperatuur ergens ligt tussen -10 en 40 graden
+                    self.__queue_temperaturen.append(data)
                 elif counter >= 17 and counter <= 26: # Zet de gemiddelde lichtintensiteiten in een lijstje
                     self.__queue_lichtintensiteiten.append(data)
                 counter = counter+1
@@ -78,7 +78,7 @@ class Zonnescherm:
                         self.__gem_lichtintensiteit_CB(self.__queue_lichtintensiteiten)
                 elif data <= 56: # Bij een waarde van 7 tot en met 56 betekent het dat er een nieuwe gemiddelde temperatuur is
                     self.__queue_temperaturen.pop(0)
-                    self.__queue_temperaturen.append(data-7-10) # -10 omdat we willen dat de temperatuur ergens ligt tussen -10 en 40 graden
+                    self.__queue_temperaturen.append(data-7)
                     if self.__gem_temperatuur_CB is not None:
                         self.__gem_temperatuur_CB(self.__queue_temperaturen)
         except:
