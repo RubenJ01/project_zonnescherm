@@ -68,8 +68,8 @@ class GUI:
         OptionMenu(self.__frameBottom, self.__selected_licht, *self.__lichtopties, command=self.__set_licht).pack(
             side=LEFT)
         # id voor de grafieken initialiseren
-        self.lichtintensiteit_id_lijn = None
-        self.temperatuur_id_lijn = None
+        self.lichtintensiteit_id_lijn = []
+        self.temperatuur_id_lijn = []
         # Grafiek tempertatuur
         self.__canvas.create_line(50, 550, 500, 550, width=2)  # x-axis (x,y)(x,y)
         self.__canvas.create_text(50, 25, fill="darkblue", text="Temperatuur celcius", anchor=NW)
@@ -315,12 +315,14 @@ class GUI:
                                                           command=_setit(self.__selected_device, zonnescherm,
                                                                          self.__select_zonnescherm))
 
-    def draw_grafiek_temp(self, temperaturen):
+    def __draw_grafiek_temp(self, temperaturen):
         """
         Tekent de grafiek met temperaturen.
         :param temperaturen: lijst van temperaturen ex: [10, 20, 40, -5] etc...
         """
-        self.__canvas.after(1000, self.__canvas.delete, self.temperatuur_id_lijn)
+        for line in self.temperatuur_id_lijn:
+            self.__canvas.delete(line)
+        self.temperatuur_id_lijn = []
         punten = []
         for index, temp in enumerate(temperaturen):
             temp = temp / 50
@@ -329,15 +331,17 @@ class GUI:
             punten.append([punt_op_x, punt_op_y])
         for index in range(len(punten)):
             if index != 0:
-                self.temperatuur_id_lijn = self.__canvas.create_line(punten[index][0], punten[index][1], punten[index - 1][0], punten[index - 1][1],
-                        fill="blue", tags="temp")
+                self.temperatuur_id_lijn.append(self.__canvas.create_line(punten[index][0], punten[index][1], punten[index - 1][0], punten[index - 1][1],
+                        fill="blue", tags="temp"))
 
-    def draw_grafiek_lichtintensiteiten(self, licht_intensiteiten):
+    def __draw_grafiek_lichtintensiteiten(self, licht_intensiteiten):
         """
         Tekent de grafiek met lichtintensiteiten.
         :param licht_intensiteiten: lijst van licht intensiteiten ex: ["licht", "schemerig", "neutraal"] etc...
         """
-        self.__canvas.after(1000, self.__canvas.delete, self.lichtintensiteit_id_lijn)
+        for line in self.lichtintensiteit_id_lijn:
+            self.__canvas.delete(line)
+        self.lichtintensiteit_id_lijn = []
         y_waarde_bij_licht = {
             0: 550,
             1: 425,
@@ -352,5 +356,5 @@ class GUI:
             punten.append([punt_op_x, punt_op_y])
         for index in range(len(punten)):
             if index != 0:
-                self.lichtintensiteit_id_lijn = self.__canvas.create_line(punten[index][0], punten[index][1], punten[index - 1][0], punten[index - 1][1],
-                        fill="blue", tags="temp")
+                self.lichtintensiteit_id_lijn.append(self.__canvas.create_line(punten[index][0], punten[index][1], punten[index - 1][0], punten[index - 1][1],
+                        fill="blue", tags="temp"))
