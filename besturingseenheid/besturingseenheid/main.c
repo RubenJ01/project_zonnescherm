@@ -68,6 +68,8 @@ void transmit_all() {
 	for (int i = 0; i < 10; ++i) {
 		transmit(gemiddelde_lichtintensiteiten[i]);	
 	}
+	transmit(Get_temperatuur_counter());
+	transmit(Get_lichtintensiteit_counter());
 }
 
 void verwerk_data(){

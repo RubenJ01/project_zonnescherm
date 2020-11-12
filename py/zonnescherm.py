@@ -9,8 +9,10 @@ class Zonnescherm:
         self.__gem_temperatuur_CB = None
         self.__gem_lichtintensiteit_CB = None
         self.__status_CB = None
-        self.__queue_temperaturen = []
-        self.__queue_lichtintensiteiten = []
+        self.__temperatuur_counter = 0
+        self.__queue_temperaturen = [0] * 10
+        self.__lichtintensiteit_counter = 0
+        self.__queue_lichtintensiteiten = [0] * 10
         self.__oprol_afstand = 0
         self.__uitrol_afstand = 0
         self.__min_temperatuur = 0
@@ -25,8 +27,8 @@ class Zonnescherm:
             self.__ser.flushInput()
         except:
             self.__ser.open()
-
-        self.__ser.flushInput()
+        finally:
+            self.__load_settings()
 
     def close_connection(self):
         self.__ser.close()
@@ -36,8 +38,10 @@ class Zonnescherm:
             self.__send(1)
             time.sleep(2.0) # Wacht 2 seconden
         counter = 0
+        self.__queue_temperaturen = []
+        self.__queue_lichtintensiteiten = []
         try:
-            while self.__ser.isOpen() and (self.__ser.inWaiting() > 0 or counter < 27):
+            while self.__ser.isOpen() and (self.__ser.inWaiting() > 0 or counter < 29):
                 data = ord(self.__ser.read(1))
                 print("Load: ", counter, data)
                 if counter == 0: # Zet de auto
@@ -58,6 +62,16 @@ class Zonnescherm:
                     self.__queue_temperaturen.append(data)
                 elif counter >= 17 and counter <= 26: # Zet de gemiddelde lichtintensiteiten in een lijstje
                     self.__queue_lichtintensiteiten.append(data)
+                elif counter == 27:
+                    if data == 10:
+                        self.__temperatuur_counter = 9
+                    else:
+                        self.__temperatuur_counter = data
+                elif counter == 28:
+                    if data == 10:
+                        self.__lichtintensiteit_counter = 9
+                    else:
+                        self.__lichtintensiteit_counter = data
                 counter = counter+1
         except:
             pass
@@ -77,13 +91,21 @@ class Zonnescherm:
                     if self.__status_CB is not None:
                         self.__status_CB(self.__status)
                 elif data <= 6: # Bij een waarde van 2 tot en met 6 betekent het dat er een nieuwe gemiddelde lichtintensiteit is
-                    self.__queue_lichtintensiteiten.pop(0)
-                    self.__queue_lichtintensiteiten.append(data-2)
+                    if self.__lichtintensiteit_counter < 10:
+                        self.__queue_lichtintensiteiten[self.__lichtintensiteit_counter] = (data-2)
+                        self.__lichtintensiteit_counter = self.__lichtintensiteit_counter + 1
+                    else:
+                        self.__queue_lichtintensiteiten.pop(0)
+                        self.__queue_lichtintensiteiten.append(data-2)
                     if self.__gem_lichtintensiteit_CB is not None:
                         self.__gem_lichtintensiteit_CB(self.__queue_lichtintensiteiten)
                 elif data <= 56: # Bij een waarde van 7 tot en met 56 betekent het dat er een nieuwe gemiddelde temperatuur is
-                    self.__queue_temperaturen.pop(0)
-                    self.__queue_temperaturen.append(data-7)
+                    if self.__temperatuur_counter < 10:
+                        self.__queue_temperaturen[self.__temperatuur_counter] = (data-7)
+                        self.__temperatuur_counter = self.__temperatuur_counter + 1
+                    else:
+                        self.__queue_temperaturen.pop(0)
+                        self.__queue_temperaturen.append(data-7)
                     if self.__gem_temperatuur_CB is not None:
                         self.__gem_temperatuur_CB(self.__queue_temperaturen)
         except:

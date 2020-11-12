@@ -28,6 +28,10 @@ int* Get_afgelopen_gemiddelde_lichtintensiteiten() {
 	return afgelopen_gemiddelde_lichtintensiteiten;
 }
 
+int Get_lichtintensiteit_counter() {
+	return index_seconde_array_lichtintensiteiten_gemiddeld;
+}
+
 void do_conversion()
 {
 	ADCSRA |= (1 << ADSC);   // Start conversie
@@ -77,13 +81,13 @@ void update_lichtintensiteit(){
 		}
 		avg = (float)sum / loop;
 		
-		if (index_seconde_array_lichtintensiteiten_gemiddeld >= 9){
+		if (index_seconde_array_lichtintensiteiten_gemiddeld >= 10){
 			
-			for(i=10-1;i>0;i--)
+			for(i=0;i<9;i++)
 			{
-				afgelopen_gemiddelde_lichtintensiteiten[i]=afgelopen_gemiddelde_lichtintensiteiten[i-1];
+				afgelopen_gemiddelde_lichtintensiteiten[i]=afgelopen_gemiddelde_lichtintensiteiten[i+1];
 			}
-			afgelopen_gemiddelde_lichtintensiteiten[0]=round(avg);
+			afgelopen_gemiddelde_lichtintensiteiten[9]=round(avg);
 			huidige_lichtintensiteit2=round(avg);
 			
 		}

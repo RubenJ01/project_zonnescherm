@@ -38,6 +38,10 @@ int* Get_afgelopen_gemiddelde_temperaturen() {
 	return afgelopen_gemiddelde_temperaturen;
 }
 
+int Get_temperatuur_counter() {
+	return index_gemiddelde_array;
+}
+
 void update_temperatuur(){
 	int i;
 	ADMUX  = (1 << REFS0) | (1 << ADLAR); // Select AD0
@@ -57,13 +61,13 @@ void update_temperatuur(){
 		}
 		avg = (float)sum / loop;
 		
-		if (index_gemiddelde_array >= 9){
+		if (index_gemiddelde_array >= 10){
 			
-			for(i=10-1;i>0;i--)
+			for(i=0;i<9;i++)
 			{
-				afgelopen_gemiddelde_temperaturen[i]=afgelopen_gemiddelde_temperaturen[i-1];
+				afgelopen_gemiddelde_temperaturen[i]=afgelopen_gemiddelde_temperaturen[i+1];
 			}
-			afgelopen_gemiddelde_temperaturen[0]=round(avg);
+			afgelopen_gemiddelde_temperaturen[9]=round(avg);
 			huidige_temperatuur=round(avg);
 			
 		}

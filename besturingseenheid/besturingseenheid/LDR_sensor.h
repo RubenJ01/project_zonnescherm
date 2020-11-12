@@ -10,6 +10,7 @@ void Set_gemiddelde_lichtintensiteit_CB(void* callback);
 int Get_min_lichtintensiteit();
 int Get_huidige_lichtintensiteit();
 int* Get_afgelopen_gemiddelde_lichtintensiteiten();
+int Get_lichtintensiteit_counter();
 void update_lichtintensiteit();
 void do_conversion();
 

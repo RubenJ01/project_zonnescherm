@@ -13,6 +13,7 @@ int Get_max_temperatuur();
 int Get_min_temperatuur();
 int Get_huidige_temperatuur();
 int* Get_afgelopen_gemiddelde_temperaturen();
+int Get_temperatuur_counter();
 void update_temperatuur();
 
 #endif /* TEMPERATUUR_SENSOR_H_ */
